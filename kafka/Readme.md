@@ -51,5 +51,6 @@ docker exec -it 3f223cdc3fcd  kafka-topics.sh --create --topic log --replication
  docker exec -it 3f223cdc3fcd kafka-console-producer.sh --topic log --broker-list localhost:9092
  
  docker exec -it 3f223cdc3fcd kafka-console-consumer.sh --topic log --from-beginning --bootstrap-server $localhost:9092
+ 
  ```
  
