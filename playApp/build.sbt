@@ -18,3 +18,4 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.slf4j"))
 )
 
+routesGenerator := InjectedRoutesGenerator

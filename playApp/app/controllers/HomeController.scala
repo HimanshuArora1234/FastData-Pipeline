@@ -3,6 +3,9 @@ package controllers
 import javax.inject._
 
 import actions.LogAction
+import akka.actor.ActorSystem
+import factory.akkaFactory.{AkkaFactory, LogMessage}
+import factory.kafkaFactory.KafkaLogProducer
 import play.api._
 import play.api.mvc._
 
@@ -11,7 +14,7 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() extends Controller {
+class HomeController @Inject() (val akkaFactory: AkkaFactory, kafkaLogProducer: KafkaLogProducer, actorSystem: ActorSystem) extends Controller {
 
   /**
    * Create an Action to render an HTML page with a welcome message.

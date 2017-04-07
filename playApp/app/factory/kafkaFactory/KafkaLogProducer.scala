@@ -23,7 +23,10 @@ class KafkaLogProducer @Inject() (configuration: Configuration) {
 
   lazy private val producer = new KafkaProducer[String, String](props)
 
-  def send(msg: String) = producer.send(new ProducerRecord[String, String](topicName, msg))
+  def send(msg: String) = {
+    System.out.println(" //////////////////////////////// msg = " + msg + " Producer = " + producer)
+    producer.send(new ProducerRecord[String, String](topicName, msg))
+  }
 
   def close = producer.close()
 

@@ -11,7 +11,7 @@ case class LogMessage(msg: String)
 /**
   * Created by himanshu on 06/04/17.
   */
-class KafkaProducerActor @Inject() (kafkaLogProducer: KafkaLogProducer) extends Actor {
+class KafkaProducerActor(kafkaLogProducer: KafkaLogProducer) extends Actor {
 
   override def receive = {
     case LogMessage(msg) => kafkaLogProducer.send(msg)
@@ -23,6 +23,3 @@ class KafkaProducerActor @Inject() (kafkaLogProducer: KafkaLogProducer) extends 
   }
 }
 
-object KafkaProducerActor {
-  def props = Props[KafkaProducerActor]
-}
