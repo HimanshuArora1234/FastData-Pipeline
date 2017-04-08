@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "org.apache.kafka" % "kafka_2.11" % "0.9.0.0" excludeAll (
+  "org.apache.kafka" % "kafka_2.11" % "0.10.2.0" excludeAll (
     ExclusionRule(organization = "com.sun.jdmk"),
     ExclusionRule(organization = "com.sun.jmx"),
     ExclusionRule(organization = "javax.jms"),

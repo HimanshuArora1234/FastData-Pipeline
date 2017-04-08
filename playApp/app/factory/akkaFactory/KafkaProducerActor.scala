@@ -11,15 +11,15 @@ case class LogMessage(msg: String)
 /**
   * Created by himanshu on 06/04/17.
   */
-class KafkaProducerActor(kafkaLogProducer: KafkaLogProducer) extends Actor {
+class KafkaProducerActor extends Actor {
 
   override def receive = {
-    case LogMessage(msg) => kafkaLogProducer.send(msg)
+    case LogMessage(msg) => KafkaLogProducer.send(msg)
   }
 
   override def postStop(): Unit = {
     super.postStop()
-    kafkaLogProducer.close
+    KafkaLogProducer.close
   }
 }
 

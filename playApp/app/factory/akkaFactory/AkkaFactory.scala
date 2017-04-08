@@ -8,7 +8,6 @@ import factory.kafkaFactory.KafkaLogProducer
 /**
   * Created by himanshu on 06/04/17.
   */
-@Singleton
-class AkkaFactory @Inject()(actorSystem: ActorSystem, kafkaLogProducer: KafkaLogProducer) {
-  val kafkaProducerActorRef = actorSystem.actorOf(Props(new KafkaProducerActor(kafkaLogProducer)), "kafka-log-actor")
+object AkkaFactory {
+  val kafkaProducerActorRef = ActorSystem().actorOf(Props(new KafkaProducerActor()), "kafka-log-actor")
 }

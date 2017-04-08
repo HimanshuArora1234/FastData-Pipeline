@@ -14,7 +14,7 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() (val akkaFactory: AkkaFactory, kafkaLogProducer: KafkaLogProducer, actorSystem: ActorSystem) extends Controller {
+class HomeController @Inject() () extends Controller {
 
   /**
    * Create an Action to render an HTML page with a welcome message.
@@ -23,7 +23,7 @@ class HomeController @Inject() (val akkaFactory: AkkaFactory, kafkaLogProducer: 
    * a path of `/`.
    */
   def index = LogAction {
-    Ok(views.html.index("Your new application is ready."))
+    Ok("OK")
   }
 
 }
