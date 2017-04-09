@@ -49,20 +49,18 @@ docker exec -it 3f223cdc3fcd  kafka-topics.sh --create --topic log --replication
  
  Just for the sake of certainty that we have our kafka up & running let's create console producer and consumer on log topic and exchange some messages.
  
- ```
- docker exec -it 3f223cdc3fcd kafka-console-producer.sh --topic log --broker-list localhost:9092
- </br>
- docker exec -it 3f223cdc3fcd kafka-console-consumer.sh --topic log --from-beginning --bootstrap-server localhost:9092
- ```
+```
+docker exec -it 3f223cdc3fcd kafka-console-producer.sh --topic log --broker-list localhost:9092
+docker exec -it 3f223cdc3fcd kafka-console-consumer.sh --topic log --from-beginning --bootstrap-server localhost:9092
+```
 
 ## Another way to test your kafka installation 
 
 Install `KafkaCat` from https://github.com/edenhill/kafkacat and run the following commands to create producer and consumer respectively
 
- ```
- kafkacat -P -b 127.0.0.1:9092 -t log
- </br>
- kafkacat -C -b 127.0.0.1:9092 -t log 
- ```
+```
+kafkacat -P -b 127.0.0.1:9092 -t log
+kafkacat -C -b 127.0.0.1:9092 -t log 
+```
 
  
