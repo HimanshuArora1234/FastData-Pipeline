@@ -19,9 +19,12 @@ class LogFilter @Inject()(implicit override val mat: Materializer, exec: Executi
     // Run the next filter in the chain. This will call other filters
     // and eventually call the action. Take the result and modify it
     // by adding a new header.
+    val startTime = System.currentTimeMillis
     nextFilter(requestHeader).map { result =>
+      val endTime = System.currentTimeMillis
+      val requestTime = endTime - startTime
       AkkaFactory.kafkaProducerActorRef ! new LogMessage(KafkaLogUtils.toJson(result,
-        requestHeader.headers.get("uid").getOrElse("")))
+        requestTime, result.header.headers.get("uid").getOrElse("")))
       result
     }
   }

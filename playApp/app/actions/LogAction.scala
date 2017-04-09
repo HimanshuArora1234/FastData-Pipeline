@@ -17,6 +17,9 @@ object LogAction extends ActionBuilder[Request] {
   def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
     val uid = UUID.randomUUID().toString
     AkkaFactory.kafkaProducerActorRef ! new LogMessage(KafkaLogUtils.toJson(request, uid))
-    block(request.copy(headers = request.headers.add(("uid", uid.toString))))
+    block(Request.apply(request.copy(headers = request.headers.add(("uid", uid))), request.body))
   }
+
+  def toResponse[A](result: Result)(implicit request: Request[A]): Result =
+    result.withHeaders(("uid", request.headers.get("uid").get))
 }

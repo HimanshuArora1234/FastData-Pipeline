@@ -3,7 +3,7 @@ import javax.inject._
 import play.api._
 import play.api.http.HttpFilters
 import play.api.mvc._
-import filters.{ExampleFilter, LogFilter}
+import filters.LogFilter
 
 /**
  * This class configures filters that run on every request. This

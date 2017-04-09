@@ -39,6 +39,7 @@ let's create a topic named *log*.
 
 ```
 Z_IP=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' zookeeper)
+
 docker exec -it 3f223cdc3fcd  kafka-topics.sh --create --topic log --replication-factor 1 --partitions 1 --zookeeper $Z_IP:2181
 ```
 
@@ -62,6 +63,7 @@ Install `KafkaCat` from https://github.com/edenhill/kafkacat and run the followi
 
  ```
  kafkacat -P -b 127.0.0.1:9092 -t log
+
  kafkacat -C -b 127.0.0.1:9092 -t log 
  ```
 

@@ -28,11 +28,12 @@ object KafkaLogUtils {
     ).toString()
   }
 
-  def toJson(result: Result, uid: String): String = {
+  def toJson(result: Result, time: Long, uid: String): String = {
     Json.obj(
       "uid" -> JsString(uid),
       "type" -> JsString("response"),
       "status" -> JsString(String.valueOf(result.asJava.status())),
+      "executionTime-ms" -> JsString(String.valueOf(time)),
       "when" -> JsString(LocalDateTime.now().toString)
     ).toString()
   }

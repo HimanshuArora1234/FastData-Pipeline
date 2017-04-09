@@ -8,6 +8,7 @@ import factory.akkaFactory.{AkkaFactory, LogMessage}
 import factory.kafkaFactory.KafkaLogProducer
 import play.api._
 import play.api.mvc._
+import LogAction._
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -22,8 +23,8 @@ class HomeController @Inject() () extends Controller {
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index = LogAction {
-    Ok("OK")
+  def index = LogAction { implicit request =>
+    toResponse(Ok("ok"))
   }
 
 }
