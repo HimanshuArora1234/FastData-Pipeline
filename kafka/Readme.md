@@ -51,6 +51,7 @@ docker exec -it 3f223cdc3fcd  kafka-topics.sh --create --topic log --replication
  
  ```
  docker exec -it 3f223cdc3fcd kafka-console-producer.sh --topic log --broker-list localhost:9092
+ </br>
  docker exec -it 3f223cdc3fcd kafka-console-consumer.sh --topic log --from-beginning --bootstrap-server localhost:9092
  ```
 
@@ -60,6 +61,7 @@ Install `KafkaCat` from https://github.com/edenhill/kafkacat and run the followi
 
  ```
  kafkacat -P -b 127.0.0.1:9092 -t log
+ </br>
  kafkacat -C -b 127.0.0.1:9092 -t log 
  ```
 
