@@ -10,7 +10,8 @@ import play.api.mvc.{Filter, RequestHeader, Result}
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * Created by himanshu on 02/04/17.
+  * Filter to send response logs to kafka.
+  * @author Himanshu
   */
 class LogFilter @Inject()(implicit override val mat: Materializer, exec: ExecutionContext) extends Filter {
 

@@ -15,8 +15,7 @@ import filters.LogFilter
  * the `application.conf` configuration file.
  *
  * @param env Basic environment settings for the current application.
- * @param exampleFilter A demonstration filter that adds a header to
- * each response.
+ * @param logFilter Filter to send response logs in kafka
  */
 @Singleton
 class Filters @Inject() (

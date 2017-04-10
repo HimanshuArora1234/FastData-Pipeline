@@ -9,7 +9,8 @@ import factory.kafkaFactory.KafkaLogProducer
 case class LogMessage(msg: String)
 
 /**
-  * Created by himanshu on 06/04/17.
+  * Akka actor to send log messages to kafka topic.
+  * @author Himanshu
   */
 class KafkaProducerActor extends Actor {
 

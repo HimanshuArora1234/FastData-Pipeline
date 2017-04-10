@@ -5,7 +5,8 @@ import java.util.Properties
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
 /**
-  * Created by himanshu on 06/04/17.
+  * Object to create Kafka producer client.
+  * @author Himanshu
   */
 object KafkaLogProducer {
 
@@ -22,6 +23,7 @@ object KafkaLogProducer {
 
   private val producer = new KafkaProducer[String, String](props)
 
+  // Function to send messages to kafka topic
   def send(msg: String) = producer.send(new ProducerRecord[String, String](topicName, msg))
 
   def close = producer.close()

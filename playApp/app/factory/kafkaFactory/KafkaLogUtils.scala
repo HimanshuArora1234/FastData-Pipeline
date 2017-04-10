@@ -10,10 +10,18 @@ import play.api.mvc.Result
 
 
 /**
-  * Created by himanshu on 08/04/17.
+  * Log utility object.
+  * @author Himanshu
   */
 object KafkaLogUtils {
 
+  /**
+    * Helper to create Json string message from request object.
+    * @param request Request
+    * @param uid Log unique id
+    * @tparam A Body type
+    * @return String
+    */
   def toJson[A](request: Request[A], uid: String): String = {
     Json.obj(
       "uid" -> JsString(uid),
@@ -28,6 +36,13 @@ object KafkaLogUtils {
     ).toString()
   }
 
+  /**
+    * Helper to create Json string message from result object.
+    * @param result Result
+    * @param time execution time in ms
+    * @param uid Log unique id
+    * @return String
+    */
   def toJson(result: Result, time: Long, uid: String): String = {
     Json.obj(
       "uid" -> JsString(uid),
