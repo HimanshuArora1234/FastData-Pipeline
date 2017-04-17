@@ -28,7 +28,7 @@ object Stream {
     kafkaStream.checkpoint(Seconds(20))   // Checkpointing every 20 sec
 
     kafkaStream.foreachRDD(rdd => {
-        println("----------------------- Messages Received from Kafak ----------------------------")
+        println("----------------------- Messages received from kafka ----------------------------")
         rdd.foreach(record => println(record._2))
       }
     )
