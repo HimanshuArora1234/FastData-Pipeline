@@ -14,25 +14,33 @@ object Stream {
 
   def main(args: Array[String]): Unit = {
 
-    val sparkConf = new SparkConf().setAppName("kafka-streaming-app").setMaster("local") // Running on local machine
+    // Create spark context for this streaming job & run it on local machine as master
+    val sparkConf = new SparkConf().setAppName("kafka-streaming-app").setMaster("local")
 
     // Create a StreamingContext with a 1 second batch size
     val ssc = new StreamingContext(sparkConf, Seconds(1))
-    ssc.checkpoint("./spark-checkpoints") // Checkpointing meta-data to recover properly from faults
+    // Checkpointing meta-data to recover properly from failures
+    ssc.checkpoint("./spark-checkpoints")
 
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> "localhost:9092") // Kafka broker
-    val kafkaTopics = Set("log") // Kafak topic
+    // Kafka broker, using kafka installed on local machine
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> "localhost:9092")
+    // Kafka topic to stream from
+    val kafkaTopics = Set("log")
 
+    // Create a direct stream without receiver
     val kafkaStream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, kafkaTopics)
-    kafkaStream.checkpoint(Seconds(20))   // Checkpointing every 20 sec
+    // Checkpointing spark meta-data every 20 sec
+    kafkaStream.checkpoint(Seconds(20))
 
+    // Actions applied to DStream
     kafkaStream.foreachRDD(rdd => {
-        println("----------------------- Messages received from kafka ----------------------------")
+        println("Message batch received from kafka")
         rdd.foreach(record => println(record._2))
       }
     )
 
+    // Start streaming & wait indefinite for termination
     ssc.start()
     ssc.awaitTermination()
   }
