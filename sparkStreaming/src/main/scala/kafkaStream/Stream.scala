@@ -4,6 +4,7 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.kafka.KafkaUtils
+import org.elasticsearch.spark._
 
 /**
   * Object to stream data from the kafka topic.
@@ -16,6 +17,9 @@ object Stream {
 
     // Create spark context for this streaming job & run it on local machine as master
     val sparkConf = new SparkConf().setAppName("kafka-streaming-app").setMaster("local")
+    // Setting conf to write data to elastic search
+    sparkConf.set("es.nodes", "localhost:9200")
+    sparkConf.set("es.index.auto.create", "true")
 
     // Create a StreamingContext with a 1 second batch size
     val ssc = new StreamingContext(sparkConf, Seconds(1))
@@ -35,6 +39,10 @@ object Stream {
 
     // Actions applied to DStream
     kafkaStream.foreachRDD(rdd => {
+        // Writing data to elastic search
+        rdd.map(record => record._2).saveToEs("fastdata/log")
+
+        // Printing data in console
         println("Message batch received from kafka")
         rdd.foreach(record => println(record._2))
       }

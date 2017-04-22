@@ -7,5 +7,12 @@ scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-streaming" % sparkVersion,
-  "org.apache.spark" %% "spark-streaming-kafka" % sparkVersion
+  "org.apache.spark" %% "spark-streaming-kafka" % sparkVersion,
+  "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.12",
+  "org.elasticsearch" %% "elasticsearch-spark-13" % "5.3.0" excludeAll (
+    ExclusionRule(organization = "org.apache.spark"),
+    ExclusionRule(organization = "org.apache.hadoop"),
+    ExclusionRule(organization = "org.eclipse.jetty.orbit"),
+    ExclusionRule(organization = "com.google.guava"),
+    ExclusionRule(organization = "org.slf4j"))
 )
