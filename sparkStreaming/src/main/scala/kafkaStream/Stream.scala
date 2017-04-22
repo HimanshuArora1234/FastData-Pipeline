@@ -20,7 +20,7 @@ object Stream {
     val ssc = new StreamingContext(sparkConf, Seconds(1))
     ssc.checkpoint("./spark-checkpoints") // Checkpointing meta-data to recover properly from faults
 
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> "localhost:9092") // Kafka broker
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> "172.17.0.3:9092") // Kafka broker
     val kafkaTopics = Set("log") // Kafak topic
 
     val kafkaStream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
