@@ -16,7 +16,7 @@ object Stream {
   def main(args: Array[String]): Unit = {
 
     // Create spark context for this streaming job & run it on local machine as master
-    val sparkConf = new SparkConf().setAppName("kafka-streaming-app").setMaster("local")
+    val sparkConf = new SparkConf().setAppName("kafka-streaming-app").setMaster("local[2]")
     // Setting conf to write data to elastic search
     sparkConf.set("es.nodes", "localhost:9200")
     sparkConf.set("es.index.auto.create", "true")
@@ -39,11 +39,11 @@ object Stream {
 
     // Actions applied to DStream
     kafkaStream.foreachRDD(rdd => {
-        // Writing data to elastic search
-        rdd.map(record => record._2).saveToEs("fastdata/log")
+        // Writing data to elastic search to fastdata index and log type
+        rdd.map(record => record._2).saveJsonToEs("fastdata/log")
 
         // Printing data in console
-        println("Message batch received from kafka")
+        println(" <---- Message batch received from kafka ----> ")
         rdd.foreach(record => println(record._2))
       }
     )
