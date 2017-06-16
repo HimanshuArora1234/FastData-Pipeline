@@ -28,7 +28,7 @@ Below are the screen captues of kibana `raw log query` and `log statistics & gra
 
 ![RawQuery](raw-search.png)
 
-<br/>
+
 
 ![Statistic](dashboard.png)
 

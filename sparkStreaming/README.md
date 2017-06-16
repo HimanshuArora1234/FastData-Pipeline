@@ -15,12 +15,13 @@ Spark UI helps a lot to moniter and get the insight of the running streaming job
 ![UI](Spark-UI.png)
 
 
-## Output
+## Output - Spark UI
 
+Spark UI helps a lot to moniter and get the insight of the running jobs.
 Below are the screen captures of spark ui showing the `spark jobs` and `streaming statistics` of this fast data application:
 
 ![Jobs](jobs-ui.png)
 
-<br />
+
 
 ![Streaming](streaming-ui.png)
