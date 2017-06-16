@@ -22,3 +22,13 @@ To test, point your browser port 5601 http://localhost:5601 and you should see t
 
 ![UI](Kibana-UI.png)
 
+## Output
+
+Below are the screen captues of kibana `raw log query` and `log statistics & graphs` **dashboards** configured for this fast data application:
+
+![RawQuery](raw-search.png)
+
+<br/>
+
+![Statistic](dashboard.png)
+
