@@ -30,6 +30,6 @@ object LogAction extends ActionBuilder[Request] {
     * @tparam A Type of request body
     * @return Result
     */
-  def toResponse[A](result: Result)(implicit request: Request[A]): Result =
+  def toUniqueResponse[A](result: Result)(implicit request: Request[A]): Result =
     request.headers.get("uid").map(uid => result.withHeaders(("uid", uid))).getOrElse(result)
 }

@@ -3,7 +3,9 @@ package factory.kafkaFactory
 import java.time.LocalDateTime
 import java.util.UUID
 
-import play.api.libs.json.{JsString, Json}
+import model.EventType
+import model.EventType.EventType
+import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.mvc.Request
 import play.mvc.Http.RequestHeader
 import play.api.mvc.Result
@@ -20,7 +22,7 @@ object KafkaLogUtils {
     * @param request Request
     * @param uid Log unique id
     * @tparam A Body type
-    * @return String
+    * @return Json string
     */
   def toJson[A](request: Request[A], uid: String): String = {
     Json.obj(
@@ -41,7 +43,7 @@ object KafkaLogUtils {
     * @param result Result
     * @param time execution time in ms
     * @param uid Log unique id
-    * @return String
+    * @return Json string
     */
   def toJson(result: Result, time: Long, uid: String): String = {
     Json.obj(
@@ -50,6 +52,19 @@ object KafkaLogUtils {
       "status" -> JsString(String.valueOf(result.asJava.status())),
       "executionTime-ms" -> JsString(String.valueOf(time)),
       "when" -> JsString(LocalDateTime.now().toString)
+    ).toString()
+  }
+
+  /**
+    * Helper to create Json string message for events.
+    * @param eventType Event type
+    * @param data data involved in the event
+    * @return Json string
+    */
+  def toEventJson(eventType: EventType.Value, data: JsValue): String = {
+    Json.obj(
+      "event" -> eventType.toString,
+      "data" -> data
     ).toString()
   }
 }
