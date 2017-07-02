@@ -4,3 +4,5 @@ resolvers += "bintray-spark-packages" at "https://mvnrepository.com/artifact/org
 
 resolvers += "clojars" at "https://clojars.org/repo"
 resolvers += "conjars" at "http://conjars.org/repo"
+
+resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
