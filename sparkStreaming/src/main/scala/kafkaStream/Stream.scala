@@ -24,6 +24,9 @@ object Stream {
     sparkConf.set("es.index.auto.create", "true")
     sparkConf.set("es.nodes.wan.only", "true")
 
+    // Conf to connect with cassandra
+    sparkConf.set("spark.connection.cassandra.host", "127.0.0.1")
+
 
     // Create a StreamingContext with a 1 second batch size
     val ssc = new StreamingContext(sparkConf, Seconds(1))
