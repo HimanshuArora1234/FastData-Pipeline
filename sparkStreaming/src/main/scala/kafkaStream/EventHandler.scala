@@ -1,6 +1,8 @@
 package kafkaStream
 
-import play.api.libs.json.Json
+import java.util.UUID
+
+import play.api.libs.json.{JsObject, JsValue, Json}
 
 /**
   * Object to handle the event-sourcing events.
@@ -15,9 +17,18 @@ object EventHandler {
     * @return Query string if a valid event
     */
   def handle(event: String): Option[String] =  event match {
-    case eventStr if eventStr.contains("ProfileAdded") => extractData(event)
-    case eventStr if eventStr.contains("ProfileUpdated") => extractData(event)
-    case eventStr if eventStr.contains("ProfileDeleted") => extractData(event)
+    case eventStr if eventStr.contains("ProfileAdded") => extractData(event, "ProfileAdded").map(json =>
+      s"INSERT INTO userDB.profile (uuid, name, email) VALUES(${(json \ "uuid").get.toString}, " +
+        s"${(json \ "name").get.toString}, ${(json \ "age").get.toString});"
+    )
+    case eventStr if eventStr.contains("ProfileUpdated") => extractData(event, "ProfileUpdated").map(json =>
+      s"UPDATE userDB.profile name=${(json \ "name").get.toString}, age=${(json \ "age").get.toString} " +
+        s"WHERE uuid=${(json \ "uuid").get.toString};"
+
+    )
+    case eventStr if eventStr.contains("ProfileDeleted") => extractData(event, "ProfileDeleted").map(json =>
+      s"DELETE FROM  userDB.profile WHERE uuid=${(json \ "uuid").get.toString};"
+    )
     case _ => None
   }
 
@@ -26,8 +37,13 @@ object EventHandler {
     * @param event Event to be parsed
     * @return Data string if a valid event
     */
-  private def extractData(event: String): Option[String] = {
-    Option((Json.parse(event) \ "data").get.toString)
+  private def extractData(event: String, eventType: String): Option[JsValue] = {
+    val jsonData = (Json.parse(event) \ "data").get
+    if (eventType == "ProfileAdded") {
+      Option(jsonData.as[JsObject].deepMerge(Json.obj("uuid" -> UUID.randomUUID().toString)))
+    } else {
+      Option(jsonData)
+    }
   }
 
 }

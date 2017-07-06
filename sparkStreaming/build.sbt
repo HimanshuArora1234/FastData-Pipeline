@@ -10,6 +10,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-streaming" % sparkVersion,
   "org.apache.spark" %% "spark-streaming-kafka" % sparkVersion,
   "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.12",
+  "com.datastax.spark" %% "spark-cassandra-connector" % "1.4.5",
   "org.elasticsearch" %% "elasticsearch-spark-13" % "5.3.0" excludeAll (
     ExclusionRule(organization = "org.apache.spark"),
     ExclusionRule(organization = "org.apache.hadoop"),
