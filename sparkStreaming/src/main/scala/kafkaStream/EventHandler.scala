@@ -19,10 +19,10 @@ object EventHandler {
   def handle(event: String): Option[String] =  event match {
     case eventStr if eventStr.contains("ProfileAdded") => extractData(event, "ProfileAdded").map(json =>
       s"INSERT INTO userDB.profile (uuid, name, email) VALUES(${(json \ "uuid").get.toString}, " +
-        s"${(json \ "name").get.toString}, ${(json \ "age").get.toString});"
+        s"${(json \ "name").get.toString}, ${(json \ "email").get.toString});"
     )
     case eventStr if eventStr.contains("ProfileUpdated") => extractData(event, "ProfileUpdated").map(json =>
-      s"UPDATE userDB.profile name=${(json \ "name").get.toString}, age=${(json \ "age").get.toString} " +
+      s"UPDATE userDB.profile name=${(json \ "name").get.toString}, email=${(json \ "email").get.toString} " +
         s"WHERE uuid=${(json \ "uuid").get.toString};"
 
     )

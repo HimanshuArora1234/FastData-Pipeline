@@ -5,7 +5,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.elasticsearch.spark._
-
+import com.datastax.spark.connector._
 /**
   * Object to stream data from the kafka topic, process it accordingly and push it to the next steps of the
   * data pipeline.
@@ -25,14 +25,14 @@ object Stream {
     sparkConf.set("es.nodes.wan.only", "true")
 
     // Conf to connect with cassandra
-    sparkConf.set("spark.connection.cassandra.host", "127.0.0.1")
+    sparkConf.set("spark.cassandra.connection.host", "127.0.0.1")
 
 
     // Create a StreamingContext with a 1 second batch size
     val ssc = new StreamingContext(sparkConf, Seconds(1))
 
     // Set checkpoint directory to store meta-data to recover properly and faster from failures
-    ssc.checkpoint("./spark-checkpoints")
+    //ssc.checkpoint("./spark-checkpoints")
 
     // Kafka broker(s) to connect with
     val kafkaParams = Map[String, String]("metadata.broker.list" -> "127.0.0.1:9092")
@@ -46,7 +46,7 @@ object Stream {
       ssc, kafkaParams, kafkaTopics)
 
     // Checkpointing spark meta-data every 60 sec
-    kafkaStream.checkpoint(Seconds(60))
+    //kafkaStream.checkpoint(Seconds(60))
 
     // Actions applied to DStream
     kafkaStream.foreachRDD(rdd => {
@@ -62,8 +62,8 @@ object Stream {
               && !record.contains("request")
               && !record.contains("response")
           )
-          .map(record => EventHandler.handle(record))
-          .foreach(println)
+          .map(Tuple1(_))
+          .saveToCassandra("userdb", "profile", SomeColumns("uuid", "email", "name"))
 
         // Filter application log type data and write it to elastic search (index: fastdata & type: log)
         rddValue
