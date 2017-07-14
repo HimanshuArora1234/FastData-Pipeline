@@ -6,7 +6,7 @@
 GET         /                           controllers.HomeController.index
 POST        /profiles                   controllers.HomeController.addUserProfile
 PUT         /profiles                   controllers.HomeController.updateUserProfile
-DELETE      /profiles/:id               controllers.HomeController.deleteUserProfile(id: Long)
+DELETE      /profiles/:id               controllers.HomeController.deleteUserProfile(id: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

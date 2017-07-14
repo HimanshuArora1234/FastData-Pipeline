@@ -38,7 +38,6 @@ CREATE KEYSPACE userDB WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replica
 
 
 CREATE TABLE profile (   uuid text PRIMARY KEY,   name text,   email text );
-
 ```
 
 https://github.com/datastax/spark-cassandra-connector

@@ -57,9 +57,9 @@ class HomeController @Inject() () extends Controller {
 
   }
 
-  def deleteUserProfile(id: Long) = LogAction { implicit request =>
+  def deleteUserProfile(id: String) = LogAction { implicit request =>
     // Log ProfileDeleted event to kafka event log topic (through AKKA actor)
-    AkkaFactory.kafkaProducerActorRef ! new LogMessage(KafkaLogUtils.toEventJson(EventType.ProfileDeleted, JsNumber(id)))
+    AkkaFactory.kafkaProducerActorRef ! new LogMessage(KafkaLogUtils.toEventJson(EventType.ProfileDeleted, Json.obj("uuid" -> id)))
 
     // Eventual consistency applies, hence sending 202
     toUniqueResponse(Accepted)

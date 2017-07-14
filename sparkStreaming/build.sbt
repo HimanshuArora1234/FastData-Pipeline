@@ -20,4 +20,3 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.google.guava"),
     ExclusionRule(organization = "org.slf4j"))
 )
-

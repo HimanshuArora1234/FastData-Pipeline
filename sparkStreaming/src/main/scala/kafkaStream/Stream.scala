@@ -6,6 +6,9 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.elasticsearch.spark._
 import com.datastax.spark.connector._
+import com.datastax.spark.connector.writer.WritableToCassandra
+import org.apache.spark.rdd.RDD
+
 /**
   * Object to stream data from the kafka topic, process it accordingly and push it to the next steps of the
   * data pipeline.
@@ -20,9 +23,9 @@ object Stream {
     val sparkConf = new SparkConf().setAppName("kafka-streaming-app").setMaster("local[4]")
 
     // Setting conf to write data to elastic search
-    sparkConf.set("es.nodes", "localhost:9200")
-    sparkConf.set("es.index.auto.create", "true")
-    sparkConf.set("es.nodes.wan.only", "true")
+    //sparkConf.set("es.nodes", "localhost:9200")
+    //sparkConf.set("es.index.auto.create", "true")
+    //sparkConf.set("es.nodes.wan.only", "true")
 
     // Conf to connect with cassandra
     sparkConf.set("spark.cassandra.connection.host", "127.0.0.1")
@@ -36,7 +39,7 @@ object Stream {
 
     // Kafka broker(s) to connect with
     val kafkaParams = Map[String, String]("metadata.broker.list" -> "127.0.0.1:9092")
-    
+
     // Topic to stream from
     val kafkaTopics = Set("log")
 
@@ -51,32 +54,50 @@ object Stream {
     // Actions applied to DStream
     kafkaStream.foreachRDD(rdd => {
 
-        // Transform key value pair rdd to it's value and persist it for optimization during following transformations
-        val rddValue = rdd.map(record => record._2).persist()
+      // Transform key value pair rdd to it's value and persist it for optimization during following transformations
+      val rddValue = rdd.map(record => record._2).persist()
 
-        // Filter event-sourcing events and handle them accordingly
-        rddValue
-          .filter(record =>
-            record.contains("event")
-              && record.contains("data")
-              && !record.contains("request")
-              && !record.contains("response")
-          )
-          .map(Tuple1(_))
-          .saveToCassandra("userdb", "profile", SomeColumns("uuid", "email", "name"))
 
-        // Filter application log type data and write it to elastic search (index: fastdata & type: log)
-        rddValue
-          .filter(record => record.contains("request") || record.contains("response"))
-          .saveJsonToEs("fastdata/log")
+      // Filter update/insert event-sourcing events and handle them accordingly
+      rddValue
+        .filter(record =>
+          record.contains("event")
+            && record.contains("data")
+            && !record.contains("request")
+            && !record.contains("response")
+            && !record.contains("ProfileDeleted")
+        )
+        .map(EventHandler.handleUpdate(_)).filter(_.isDefined).map(_.get)
+        .saveToCassandra("userdb", "profile", SomeColumns("uuid", "name", "email"))
 
-        // Printing streamed data in console
-        println(" <---- Message batch received from kafka ----> ")
-        rddValue.foreach(println)
+      // Filter detele event-sourcing events and handle them accordingly
+      rddValue
+        .filter(record =>
+          record.contains("event")
+            && record.contains("data")
+            && !record.contains("request")
+            && !record.contains("response")
+            && record.contains("ProfileDeleted")
+        )
+        .map(EventHandler.handleDelete(_)).filter(_.isDefined).map(_.get)
+        //.deleteFromCassandra("userdb", "profile", SomeColumns("uuid"))
 
-        // Remove persisted rdd but in non-blocking way
-        rddValue.unpersist(false)
-      }
+
+
+
+
+      // Filter application log type data and write it to elastic search (index: fastdata & type: log)
+      rddValue
+        .filter(record => record.contains("request") || record.contains("response"))
+      //.saveJsonToEs("fastdata/log")
+
+      // Printing streamed data in console
+      println(" <---- Message batch received from kafka ----> ")
+      rddValue.foreach(println)
+
+      // Remove persisted rdd but in non-blocking way
+      rddValue.unpersist(false)
+    }
     )
 
     // Start streaming & wait indefinite for termination
