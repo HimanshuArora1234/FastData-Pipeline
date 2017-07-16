@@ -1,13 +1,12 @@
 package kafkaStream
 
+import com.datastax.driver.core.Cluster
+import com.datastax.spark.connector._
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
-import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.elasticsearch.spark._
-import com.datastax.spark.connector._
-import com.datastax.spark.connector.writer.WritableToCassandra
-import org.apache.spark.rdd.RDD
 
 /**
   * Object to stream data from the kafka topic, process it accordingly and push it to the next steps of the
@@ -23,9 +22,9 @@ object Stream {
     val sparkConf = new SparkConf().setAppName("kafka-streaming-app").setMaster("local[4]")
 
     // Setting conf to write data to elastic search
-    //sparkConf.set("es.nodes", "localhost:9200")
-    //sparkConf.set("es.index.auto.create", "true")
-    //sparkConf.set("es.nodes.wan.only", "true")
+    sparkConf.set("es.nodes", "localhost:9200")
+    sparkConf.set("es.index.auto.create", "true")
+    sparkConf.set("es.nodes.wan.only", "true")
 
     // Conf to connect with cassandra
     sparkConf.set("spark.cassandra.connection.host", "127.0.0.1")
@@ -35,7 +34,7 @@ object Stream {
     val ssc = new StreamingContext(sparkConf, Seconds(1))
 
     // Set checkpoint directory to store meta-data to recover properly and faster from failures
-    //ssc.checkpoint("./spark-checkpoints")
+    ssc.checkpoint("./spark-checkpoints")
 
     // Kafka broker(s) to connect with
     val kafkaParams = Map[String, String]("metadata.broker.list" -> "127.0.0.1:9092")
@@ -49,7 +48,7 @@ object Stream {
       ssc, kafkaParams, kafkaTopics)
 
     // Checkpointing spark meta-data every 60 sec
-    //kafkaStream.checkpoint(Seconds(60))
+    kafkaStream.checkpoint(Seconds(60))
 
     // Actions applied to DStream
     kafkaStream.foreachRDD(rdd => {
@@ -70,7 +69,7 @@ object Stream {
         .map(EventHandler.handleUpdate(_)).filter(_.isDefined).map(_.get)
         .saveToCassandra("userdb", "profile", SomeColumns("uuid", "name", "email"))
 
-      // Filter detele event-sourcing events and handle them accordingly
+      // Filter delete event-sourcing events and handle them accordingly
       rddValue
         .filter(record =>
           record.contains("event")
@@ -80,16 +79,13 @@ object Stream {
             && record.contains("ProfileDeleted")
         )
         .map(EventHandler.handleDelete(_)).filter(_.isDefined).map(_.get)
-        //.deleteFromCassandra("userdb", "profile", SomeColumns("uuid"))
-
-
-
+        .foreach(CassandraSession.session.execute(_))
 
 
       // Filter application log type data and write it to elastic search (index: fastdata & type: log)
       rddValue
         .filter(record => record.contains("request") || record.contains("response"))
-      //.saveJsonToEs("fastdata/log")
+        .saveJsonToEs("fastdata/log")
 
       // Printing streamed data in console
       println(" <---- Message batch received from kafka ----> ")
@@ -103,6 +99,15 @@ object Stream {
     // Start streaming & wait indefinite for termination
     ssc.start()
     ssc.awaitTermination()
+    CassandraSession.session.close()
+    CassandraSession.cluster.close()
   }
 
+}
+
+// spark-cassandra-connector doesn't support the deletion
+// hence using datastax driver to create a separate cassandre session
+private object CassandraSession {
+  val cluster = Cluster.builder().addContactPoint("127.0.0.1").build()
+  val session = cluster.connect("userdb")
 }

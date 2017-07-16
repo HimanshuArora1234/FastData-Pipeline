@@ -22,13 +22,13 @@ object EventHandler {
       ((json \ "uuid").get.as[String], (json \ "name").get.as[String], (json \ "email").get.as[String]))
 
   /**
-    * Helper function to prepare the data tuple for delete events.
+    * Helper function to prepare the cassandra deletion query for delete events.
     *
     * @param event Event to handle
-    * @return data tuple
+    * @return deletion query
     */
-  def handleDelete(event: String): Option[Tuple1[String]] =
-    extractData(event).map(json => Tuple1((json \ "uuid").get.as[String]))
+  def handleDelete(event: String): Option[String] =
+    extractData(event).map(json => s"DELETE FROM profile WHERE uuid='${(json \ "uuid").get.as[String]}';")
 
 
   /**
