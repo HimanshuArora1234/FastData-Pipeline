@@ -4,22 +4,23 @@ import java.util.UUID
 import javax.inject._
 
 import actions.LogAction
-import akka.actor.ActorSystem
+import actions.LogAction._
 import factory.akkaFactory.{AkkaFactory, LogMessage}
-import factory.kafkaFactory.{KafkaLogProducer, KafkaLogUtils}
-import play.api._
-import play.api.mvc._
-import LogAction._
+import factory.cassandraFactory.CassandraHelper
+import factory.kafkaFactory.KafkaLogUtils
 import model.EventType
-import play.api.libs.json.{JsNumber, JsObject, Json}
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc._
+import scala.collection.convert.WrapAsScala.iterableAsScalaIterable
 
 /**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
+  * This controller creates an `Action` to handle HTTP requests to the
+  * application's home page.
+  *
   * @author Himanshu
- */
+  */
 @Singleton
-class HomeController @Inject() () extends Controller {
+class HomeController @Inject()() extends Controller {
 
   def index = LogAction { implicit request =>
     toUniqueResponse(Ok("ok"))
@@ -64,6 +65,10 @@ class HomeController @Inject() () extends Controller {
     // Eventual consistency applies, hence sending 202
     toUniqueResponse(Accepted)
 
+  }
+
+  def getAllProfiles = LogAction { implicit request =>
+    toUniqueResponse(Ok(Json.toJson(CassandraHelper.getAll.toList.map(CassandraHelper.rowToJson(_)))))
   }
 
 }

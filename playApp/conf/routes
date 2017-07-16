@@ -4,6 +4,7 @@
 
 # An example controller showing a sample home page
 GET         /                           controllers.HomeController.index
+GET         /profiles                   controllers.HomeController.getAllProfiles
 POST        /profiles                   controllers.HomeController.addUserProfile
 PUT         /profiles                   controllers.HomeController.updateUserProfile
 DELETE      /profiles/:id               controllers.HomeController.deleteUserProfile(id: String)
